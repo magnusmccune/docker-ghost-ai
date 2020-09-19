@@ -1,0 +1,96 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - README.md
+    - LICENSE
+
+variables:
+    # Base URI for ARM templates
+    templateBaseUrl: 'https://raw.githubusercontent.com/andrewmatveychuk/azure.ghost-web-app-for-containers/master/arm-templates/'
+
+    # Debug switch for verbose output
+    system.debug: true
+
+pool:
+  vmImage: 'windows-latest'
+
+stages:
+
+- stage: Validate
+  displayName: Validate
+
+  variables:
+    # Resource group name to be used for template validation
+    validationResourceGroupName: 'ghost-web-app-rg' # Could be any allowed name. The resource group will be automatically provisioned by template validation tasks
+
+  jobs:
+    - job: ValidateJob
+      displayName: Validate ARM templates
+
+      steps:
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Validate resource group template
+          inputs:
+            deploymentScope: 'Subscription'
+            ConnectedServiceName: $(subscriptionName)
+            subscriptionId: $(subscriptionId)
+            location: $(location)
+            templateLocation: 'Linked Artifact'
+            csmFile: '$(Build.Repository.LocalPath)/arm-templates/resource-group/azuredeploy.json'
+            csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/resource-group/azuredeploy.parameters.json'
+            deploymentMode: 'Validation'
+
+
+#         - task: AzureResourceManagerTemplateDeployment@3
+#           displayName: Validate storage account template
+#           inputs:
+#             deploymentScope: 'Resource Group'
+#             ConnectedServiceName: $(subscriptionName)
+#             subscriptionName: $(subscriptionId)
+#             action: 'Create Or Update Resource Group'
+#             resourceGroupName: $(validationResourceGroupName)
+#             location: $(location)
+#             templateLocation: 'Linked artifact'
+#             csmFileLink: '$(templateBaseUrl)/main-template/azuredeploy.json'
+#             csmParametersFileLink: '$(templateBaseUrl)/main-template/azuredeploy.parameters.json'
+#             deploymentMode: 'Validation'
+
+#         - task: AzureResourceManagerTemplateDeployment@3
+#           displayName: Remove validation resource group
+#           condition: always()
+#           inputs:
+#             deploymentScope: 'Resource Group'
+#             ConnectedServiceName: $(subscriptionName)
+#             subscriptionName: $(subscriptionId)
+#             resourceGroupName: $(validationResourceGroupName)
+#             action: 'DeleteRG'
+#             location: $(location)
+#             deploymentMode: 'Incremental'
+
+
+# - stage: DeployToTestEnvironment
+#   displayName: Deploy to test
+#   dependsOn: Validate
+
+#   jobs:
+#   - deployment: DeploymentJob
+#     displayName: Deploy ARM templates
+#     environment: 'Test'
+#     strategy:
+#       runOnce:
+#         deploy:
+#           steps:
+#             - task: AzureResourceManagerTemplateDeployment@3
+#               displayName: Deploy resources to the resource group
+#               inputs:
+#                 deploymentScope: 'Subscription'
+#                 ConnectedServiceName: $(subscriptionName)
+#                 subscriptionName: $(subscriptionId)
+#                 location: $(location)
+#                 templateLocation: 'URL of the file'
+#                 csmFileLink: '$(templateBaseUrl)/main-template/azuredeploy.json'
+#                 csmParametersFileLink: '$(templateBaseUrl)/main-template/azuredeploy.parameters.json'
+#                 deploymentMode: 'Incremental'

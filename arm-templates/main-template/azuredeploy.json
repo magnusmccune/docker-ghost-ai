@@ -31,7 +31,7 @@
             }
         },
         "cdnSku": {
-            "type": "string",
+            "type": "object",
             "metadata": {
                 "description": "Specify the pricing tier for the CDN Profile",
                 "name": "CDN Profile SKU"

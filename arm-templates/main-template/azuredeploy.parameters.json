@@ -18,7 +18,7 @@
             "value": "Standard_Microsoft"
         },
         "linkedTemplateBaseUrl": {
-            "value": "https://raw.githubusercontent.com/andrewmatveychuk/azure.ghost-web-app-for-containers/master/"
+            "value": "https://raw.githubusercontent.com/andrewmatveychuk/azure.ghost-web-app-for-containers/master/arm-templates/"
         }
     }
 }

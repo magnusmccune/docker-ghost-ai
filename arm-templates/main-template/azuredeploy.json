@@ -42,8 +42,7 @@
             "metadata": {
                 "description": "The base URL where artifacts required by this template are located.",
                 "name": "Base URL"
-            },
-            "defaultValue": "https://raw.githubusercontent.com/andrewmatveychuk/azure.ghost-web-app-for-containers/master/"
+            }
         }
     },
     "variables": {

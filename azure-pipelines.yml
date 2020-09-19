@@ -99,17 +99,17 @@ stages:
             csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/main-template/azuredeploy.parameters.json'
             deploymentMode: 'Validation'
 
-        # - task: AzureResourceManagerTemplateDeployment@3
-        #   displayName: Remove validation resource group
-        #   condition: always()
-        #   inputs:
-        #     deploymentScope: 'Resource Group'
-        #     ConnectedServiceName: $(subscriptionName)
-        #     subscriptionName: $(subscriptionId)
-        #     resourceGroupName: $(validationResourceGroupName)
-        #     action: 'DeleteRG'
-        #     location: $(location)
-        #     deploymentMode: 'Incremental'
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Remove validation resource group
+          condition: always()
+          inputs:
+            deploymentScope: 'Resource Group'
+            ConnectedServiceName: $(subscriptionName)
+            subscriptionName: $(subscriptionId)
+            resourceGroupName: $(validationResourceGroupName)
+            action: 'DeleteRG'
+            location: $(location)
+            deploymentMode: 'Incremental'
 
 
 # - stage: DeployToTestEnvironment

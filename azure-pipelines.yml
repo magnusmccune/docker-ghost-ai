@@ -9,7 +9,7 @@ trigger:
 
 variables:
     # Base URI for ARM templates
-    templateBaseUrl: 'https://raw.githubusercontent.com/andrewmatveychuk/azure.ghost-web-app-for-containers/master/arm-templates/'
+    templateBaseUrl: '$(Build.Repository.Uri)/master/arm-templates/'
 
     # Debug switch for verbose output
     system.debug: true
@@ -48,7 +48,7 @@ stages:
           inputs:
             deploymentScope: 'Resource Group'
             ConnectedServiceName: $(subscriptionName)
-            subscriptionName: $(subscriptionId)
+            subscriptionId: $(subscriptionId)
             action: 'Create Or Update Resource Group'
             resourceGroupName: $(validationResourceGroupName)
             location: $(location)
@@ -62,7 +62,7 @@ stages:
           inputs:
             deploymentScope: 'Resource Group'
             ConnectedServiceName: $(subscriptionName)
-            subscriptionName: $(subscriptionId)
+            subscriptionId: $(subscriptionId)
             action: 'Create Or Update Resource Group'
             resourceGroupName: $(validationResourceGroupName)
             location: $(location)
@@ -76,7 +76,7 @@ stages:
           inputs:
             deploymentScope: 'Resource Group'
             ConnectedServiceName: $(subscriptionName)
-            subscriptionName: $(subscriptionId)
+            subscriptionId: $(subscriptionId)
             action: 'Create Or Update Resource Group'
             resourceGroupName: $(validationResourceGroupName)
             location: $(location)
@@ -90,7 +90,7 @@ stages:
           inputs:
             deploymentScope: 'Resource Group'
             ConnectedServiceName: $(subscriptionName)
-            subscriptionName: $(subscriptionId)
+            subscriptionId: $(subscriptionId)
             action: 'Create Or Update Resource Group'
             resourceGroupName: $(validationResourceGroupName)
             location: $(location)
@@ -105,33 +105,62 @@ stages:
           inputs:
             deploymentScope: 'Resource Group'
             ConnectedServiceName: $(subscriptionName)
-            subscriptionName: $(subscriptionId)
+            subscriptionId: $(subscriptionId)
             resourceGroupName: $(validationResourceGroupName)
             action: 'DeleteRG'
             location: $(location)
             deploymentMode: 'Incremental'
 
 
-# - stage: DeployToTestEnvironment
-#   displayName: Deploy to test
-#   dependsOn: Validate
+- stage: DeployToTestEnvironment
+  displayName: Deploy Azure resource
+  dependsOn: Validate
 
-#   jobs:
-#   - deployment: DeploymentJob
-#     displayName: Deploy ARM templates
-#     environment: 'Test'
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#             - task: AzureResourceManagerTemplateDeployment@3
-#               displayName: Deploy resources to the resource group
-#               inputs:
-#                 deploymentScope: 'Subscription'
-#                 ConnectedServiceName: $(subscriptionName)
-#                 subscriptionName: $(subscriptionId)
-#                 location: $(location)
-#                 templateLocation: 'URL of the file'
-#                 csmFileLink: '$(templateBaseUrl)/main-template/azuredeploy.json'
-#                 csmParametersFileLink: '$(templateBaseUrl)/main-template/azuredeploy.parameters.json'
-#                 deploymentMode: 'Incremental'
+  jobs:
+  - deployment: DeploymentJob
+    displayName: Deploy ARM templates
+    environment: 'Test'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: AzureResourceManagerTemplateDeployment@3
+              displayName: Create a resource group
+              inputs:
+                deploymentScope: 'Subscription'
+                ConnectedServiceName: $(subscriptionName)
+                subscriptionId: $(subscriptionId)
+                location: $(location)
+                templateLocation: 'Linked artifact'
+                csmFile: '$(Build.Repository.LocalPath)/arm-templates/resource-group/azuredeploy.json'
+                csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/resource-group/azuredeploy.parameters.json'
+                deploymentMode: 'Incremental'
+                deploymentOutputs: 'armOutputs'
+
+            - task: AzurePowerShell@4
+              displayName: Get the resource group name
+              inputs:
+                azureSubscription: $(subscriptionName)
+                scriptType: 'InlineScript'
+                Inline: |
+                  $var=ConvertFrom-Json '$(armOutputs)'
+                  $value=$var.resourceGroupName.value
+                  Write-Host "##vso[task.setvariable variable=resourceGroupName;]$value"
+                azurePowerShellVersion: 'latestVersion'
+                pwsh: true
+
+            - task: AzureResourceManagerTemplateDeployment@3
+              displayName: Deploy the resources to the resource group
+              inputs:
+                deploymentScope: 'Resource Group'
+                ConnectedServiceName: $(subscriptionName)
+                subscriptionId: $(subscriptionId)
+                action: 'Create Or Update Resource Group'
+                resourceGroupName: $(resourceGroupName)
+                location: $(location)
+                templateLocation: 'Linked artifact'
+                csmFile: '$(Build.Repository.LocalPath)/arm-templates/main-template/azuredeploy.json'
+                csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/main-template/azuredeploy.parameters.json'
+                overrideParameters: '-linkedTemplateBaseUrl $(templateBaseUrl)/'
+                deploymentMode: 'Incremental'
+                deploymentOutputs: 'armOutputs'

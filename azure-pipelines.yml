@@ -124,6 +124,8 @@ stages:
       runOnce:
         deploy:
           steps:
+            - checkout: self
+
             - task: AzureResourceManagerTemplateDeployment@3
               displayName: Create a resource group
               inputs:

@@ -9,7 +9,7 @@ trigger:
 
 variables:
     # Base URI for ARM templates
-    templateBaseUrl: '$(Build.Repository.Uri)/master/arm-templates/'
+    templateBaseUrl: '$(Build.Repository.Uri)/raw/master/arm-templates'
 
     # Debug switch for verbose output
     system.debug: true

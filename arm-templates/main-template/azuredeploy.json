@@ -1,0 +1,158 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "applicationPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Prefix to use when creating the resources in this deployment.",
+                "name": "Application name prefix"
+            }
+        },
+        "hostingPlanSku": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the pricing tier for the App Service Plan.",
+                "name": "App Service Plan SKU"
+            }
+        },
+        "logAnalyticsWorkspaceSku": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the pricing tier for the Log Analytics workspace.",
+                "name": "Log Analytics workspace SKU"
+            }
+        },
+        "containerRegistrySku": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the pricing tier for the Container Registry.",
+                "name": "Container Registry SKU"
+            }
+        },
+        "cdnSku": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the pricing tier for the CDN Profile",
+                "name": "CDN Profile SKU"
+            }
+        },
+        "linkedTemplateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "The base URL where artifacts required by this template are located.",
+                "name": "Base URL"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/andrewmatveychuk/azure.ghost-web-app-for-containers/master/"
+        }
+    },
+    "variables": {
+        "logAnalyticsWorkspaceName": "[concat(parameters('applicationPrefix'), '-la-', uniqueString(resourceGroup().Id))]",
+
+        "containerRegistryName": "[concat(parameters('applicationPrefix'), 'cr', uniqueString(resourceGroup().Id))]",
+
+        "appName": "[concat(parameters('applicationPrefix'), '-web-', uniqueString(resourceGroup().Id))]",
+        "hostingPlanName": "[concat(parameters('applicationPrefix'), '-asp-', uniqueString(resourceGroup().Id))]",
+        "applicationInsightsName": "[concat(parameters('applicationPrefix'), '-ai-', uniqueString(resourceGroup().Id))]",
+        "cdnProfileName": "[concat(parameters('applicationPrefix'), '-cdnp-', uniqueString(resourceGroup().Id))]",
+        "cdnEndpointName": "[concat(parameters('applicationPrefix'), '-cdne-', uniqueString(resourceGroup().Id))]",
+
+        "linkedTemplates": {
+            "logAnalyticsWorkspace": "[concat(parameters('linkedTemplateBaseUrl'), 'linked-templates/logAnalyticsWorkspace.json')]",
+            "containerRegistry": "[concat(parameters('linkedTemplateBaseUrl'), 'linked-templates/containerRegistry.json')]",
+            "webApp": "[concat(parameters('linkedTemplateBaseUrl'), 'linked-templates/webApp.json')]"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "webApp",
+            "resourceGroup": "[resourceGroup().name]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('linkedTemplates').webApp]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appName": {
+                        "value": "[variables('appName')]"
+                    },
+                    "hostingPlanName": {
+                        "value": "[variables('hostingPlanName')]"
+                    },
+                    "hostingPlanSku": {
+                        "value": "[parameters('hostingPlanSku')]"
+                    },
+                    "applicationInsightsName": {
+                        "value": "[variables('applicationInsightsName')]"
+                    },
+                    "workspaceId": {
+                        "value": "[reference('logAnalyticsWorkspaceDeployment').outputs.workspaceId.value]"
+                    },
+                    "cdnProfileName": {
+                        "value": "[variables('cdnProfileName')]"
+                    },
+                    "cdnEndpointName": {
+                        "value": "[variables('cdnEndpointName')]"
+                    },
+                    "cdnSku": {
+                        "value": "[parameters('cdnSku')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "logAnalyticsWorkspaceDeployment",
+            "resourceGroup": "[resourceGroup().name]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('linkedTemplates').logAnalyticsWorkspace]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('logAnalyticsWorkspaceName')]"
+                    },
+                    "workspaceSku": {
+                        "value": "[parameters('logAnalyticsWorkspaceSku')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "containerRegistryDeployment",
+            "resourceGroup": "[resourceGroup().name]",
+            "dependsOn": [
+                "logAnalyticsWorkspaceDeployment"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('linkedTemplates').containerRegistry]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "registryName": {
+                        "value": "[variables('containerRegistryName')]"
+                    },
+                    "registrySku": {
+                        "value": "[parameters('containerRegistrySku')]"
+                    },
+                    "registryAdminUserEnabled": {
+                        "value": true
+                    },
+                    "workspaceId": {
+                        "value": "[reference('logAnalyticsWorkspaceDeployment').outputs.workspaceId.value]"
+                    }
+                }
+            }
+        }
+    ]
+}

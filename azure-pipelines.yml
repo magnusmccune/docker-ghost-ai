@@ -43,32 +43,73 @@ stages:
             csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/resource-group/azuredeploy.parameters.json'
             deploymentMode: 'Validation'
 
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Validate Log Analytics workspace template
+          inputs:
+            deploymentScope: 'Resource Group'
+            ConnectedServiceName: $(subscriptionName)
+            subscriptionName: $(subscriptionId)
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: $(validationResourceGroupName)
+            location: $(location)
+            templateLocation: 'Linked artifact'
+            csmFile: '$(Build.Repository.LocalPath)/arm-templates/linked-templates/logAnalyticsWorkspace.json'
+            csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/linked-templates/logAnalyticsWorkspace.parameters.json'
+            deploymentMode: 'Validation'
 
-#         - task: AzureResourceManagerTemplateDeployment@3
-#           displayName: Validate storage account template
-#           inputs:
-#             deploymentScope: 'Resource Group'
-#             ConnectedServiceName: $(subscriptionName)
-#             subscriptionName: $(subscriptionId)
-#             action: 'Create Or Update Resource Group'
-#             resourceGroupName: $(validationResourceGroupName)
-#             location: $(location)
-#             templateLocation: 'Linked artifact'
-#             csmFileLink: '$(templateBaseUrl)/main-template/azuredeploy.json'
-#             csmParametersFileLink: '$(templateBaseUrl)/main-template/azuredeploy.parameters.json'
-#             deploymentMode: 'Validation'
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Validate Container Registry template
+          inputs:
+            deploymentScope: 'Resource Group'
+            ConnectedServiceName: $(subscriptionName)
+            subscriptionName: $(subscriptionId)
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: $(validationResourceGroupName)
+            location: $(location)
+            templateLocation: 'Linked artifact'
+            csmFile: '$(Build.Repository.LocalPath)/arm-templates/linked-templates/containerRegistry.json'
+            csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/linked-templates/containerRegistry.parameters.json'
+            deploymentMode: 'Validation'
 
-#         - task: AzureResourceManagerTemplateDeployment@3
-#           displayName: Remove validation resource group
-#           condition: always()
-#           inputs:
-#             deploymentScope: 'Resource Group'
-#             ConnectedServiceName: $(subscriptionName)
-#             subscriptionName: $(subscriptionId)
-#             resourceGroupName: $(validationResourceGroupName)
-#             action: 'DeleteRG'
-#             location: $(location)
-#             deploymentMode: 'Incremental'
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Validate Web App template
+          inputs:
+            deploymentScope: 'Resource Group'
+            ConnectedServiceName: $(subscriptionName)
+            subscriptionName: $(subscriptionId)
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: $(validationResourceGroupName)
+            location: $(location)
+            templateLocation: 'Linked artifact'
+            csmFile: '$(Build.Repository.LocalPath)/arm-templates/linked-templates/webApp.json'
+            csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/linked-templates/webApp.parameters.json'
+            deploymentMode: 'Validation'
+
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Validate main template
+          inputs:
+            deploymentScope: 'Resource Group'
+            ConnectedServiceName: $(subscriptionName)
+            subscriptionName: $(subscriptionId)
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: $(validationResourceGroupName)
+            location: $(location)
+            templateLocation: 'Linked artifact'
+            csmFile: '$(Build.Repository.LocalPath)/arm-templates/main-template/azuredeploy.json'
+            csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/main-template/azuredeploy.parameters.json'
+            deploymentMode: 'Validation'
+
+        # - task: AzureResourceManagerTemplateDeployment@3
+        #   displayName: Remove validation resource group
+        #   condition: always()
+        #   inputs:
+        #     deploymentScope: 'Resource Group'
+        #     ConnectedServiceName: $(subscriptionName)
+        #     subscriptionName: $(subscriptionId)
+        #     resourceGroupName: $(validationResourceGroupName)
+        #     action: 'DeleteRG'
+        #     location: $(location)
+        #     deploymentMode: 'Incremental'
 
 
 # - stage: DeployToTestEnvironment

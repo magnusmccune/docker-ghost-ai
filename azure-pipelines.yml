@@ -38,7 +38,7 @@ stages:
             ConnectedServiceName: $(subscriptionName)
             subscriptionId: $(subscriptionId)
             location: $(location)
-            templateLocation: 'Linked Artifact'
+            templateLocation: 'Linked artifact'
             csmFile: '$(Build.Repository.LocalPath)/arm-templates/resource-group/azuredeploy.json'
             csmParametersFile: '$(Build.Repository.LocalPath)/arm-templates/resource-group/azuredeploy.parameters.json'
             deploymentMode: 'Validation'

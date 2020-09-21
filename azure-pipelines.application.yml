@@ -25,7 +25,7 @@ stages:
             displayName: Build and push image to container registry
             inputs:
               command: buildAndPush
-              containerRegistry: AzureContainerRegistry
+              containerRegistry: GhostContainerRegistry
               dockerfile: '**/Dockerfile'
               tags: |
                 $(Build.BuildId)

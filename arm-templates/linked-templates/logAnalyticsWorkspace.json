@@ -49,6 +49,10 @@
         }
     ],
     "outputs": {
+        "workspaceName": {
+            "type": "string",
+            "value": "[parameters('workspaceName')]"
+        },
         "workspaceId": {
             "type": "string",
             "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"

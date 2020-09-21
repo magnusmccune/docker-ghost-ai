@@ -424,6 +424,10 @@
             "type": "string",
             "value": "[reference(concat(resourceId('Microsoft.Web/sites/', parameters('appName')), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2015-08-31-PREVIEW').principalId]"
         },
+        "appName": {
+            "type": "string",
+            "value": "[parameters('appName')]"
+        },
         "hostName": {
             "type": "string",
             "value": "[reference(parameters('cdnEndpointName')).hostName]"

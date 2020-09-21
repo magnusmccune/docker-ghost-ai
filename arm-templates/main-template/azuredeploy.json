@@ -153,5 +153,24 @@
                 }
             }
         }
-    ]
+    ],
+
+    "outputs": {
+        "acrLoginServer": {
+            "type": "string",
+            "value": "[reference('containerRegistryDeployment').outputs.loginServer.value]"
+        },
+        "webAppName": {
+            "type": "string",
+            "value": "[reference('webApp').outputs.appName.value]"
+        },
+        "cdnEndpointOrigin": {
+            "type": "string",
+            "value": "[reference('webApp').outputs.hostName.value]"
+        },
+        "cdnEndpointHostName": {
+            "type": "string",
+            "value": "[reference('webApp').outputs.originHostHeader.value]"
+        }
+    }
 }

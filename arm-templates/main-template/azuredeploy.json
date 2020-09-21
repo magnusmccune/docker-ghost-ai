@@ -158,7 +158,7 @@
     "outputs": {
         "acrLoginServer": {
             "type": "string",
-            "value": "[reference('containerRegistryDeployment').outputs.loginServer.value]"
+            "value": "[reference('containerRegistryDeployment').outputs.acrLoginServer.value]"
         },
         "webAppName": {
             "type": "string",

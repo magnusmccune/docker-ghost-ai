@@ -106,6 +106,14 @@
                         {
                             "name": "XDT_MicrosoftApplicationInsights_Mode",
                             "value": "default"
+                        },
+                        {
+                            "name": "NODE_ENV",
+                            "value": "production"
+                        },
+                        {
+                            "name": "privacy_useUpdateCheck",
+                            "value": "false"
                         }
                     ]
                 },

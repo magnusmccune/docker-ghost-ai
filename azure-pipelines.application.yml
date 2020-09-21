@@ -32,24 +32,25 @@ stages:
                 $(Build.BuildId)
                 latest
 
-  # - stage: DeployContainer
-  #   displayName: Deploy container
+  - stage: DeployContainer
+    displayName: Deploy container
 
-  #   jobs:
-  #   - deployment: DeploymentJob
-  #     displayName: Deploy Ghost container
-  #     environment: 'Test'
-  #     strategy:
-  #       runOnce:
-  #         deploy:
-  #           steps:
+    jobs:
+    - deployment: DeploymentJob
+      displayName: Deploy Ghost container
+      environment: 'Test'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
 
-  #           - task: AzureWebAppContainer@1
-  #             displayName: Deploy container to Web App
-  #             inputs:
-  #               azureSubscription: $(subscriptionName)
-  #               appName: ''
-  #               containers: ''
-  #               containerCommand: ''
-  #               appSettings: ''
-  #               configurationStrings: ''
+            - task: AzureWebAppContainer@1
+              displayName: Deploy container to Web App
+              inputs:
+                azureSubscription: $(subscriptionName)
+                resourceGroupName: $(resourceGroupName)
+                appName: $(appName)
+                containers: '$(acrLoginServer)/docker-ghost-ai:latest'
+                # containerCommand: ''
+                # appSettings: ''
+                # configurationStrings: ''

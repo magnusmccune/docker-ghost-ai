@@ -9,7 +9,7 @@ trigger:
     - LICENSE
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 
 stages:
   - stage: BuildContainer

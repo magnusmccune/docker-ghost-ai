@@ -3,10 +3,8 @@ trigger:
     include:
     - master
   paths:
-    exclude:
-    - README.md
-    - LICENSE
-
+    include:
+    - arm-templates/*
 variables:
     # Base URI for ARM templates
     templateBaseUrl: '$(Build.Repository.Uri)/raw/master/arm-templates'

@@ -25,7 +25,7 @@ stages:
             inputs:
               command: buildAndPush
               containerRegistry: MyDockerHub
-              repository: ghost-ai
+              repository: andrewmatveychuk/ghost-ai
               dockerfile: '**/Dockerfile'
               tags: |
                 $(Build.BuildId)

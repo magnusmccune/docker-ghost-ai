@@ -24,8 +24,8 @@ stages:
             displayName: Build and push image to container registry
             inputs:
               command: buildAndPush
-              containerRegistry: MyDockerHub
-              repository: andrewmatveychuk/ghost-ai
+              containerRegistry: myinfraacr
+              repository: magnusmccune/ghost-ai
               dockerfile: '**/Dockerfile'
               tags: |
                 $(Build.BuildId)
